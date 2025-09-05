@@ -1,0 +1,141 @@
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>50 ejercicios — Identificación de monomios</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    body { font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin: 24px; background:#f7f9fc; color:#102a43 }
+    h1 { font-size:1.6rem; margin-bottom:8px }
+    p.lead { margin-top:0; color:#334e68 }
+    .container { max-width:980px; margin:0 auto; background:white; padding:18px 22px; border-radius:10px; box-shadow:0 6px 20px rgba(16,42,67,0.08)}
+    .exercise { padding:10px; border-bottom:1px solid #eef4fb }
+    .expr { font-size:1.25rem; font-family: 'Times New Roman', serif; margin-bottom:8px }
+    .options { display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:6px; margin-bottom:6px }
+    label { background:#f0f4ff; padding:6px 10px; border-radius:6px; cursor:pointer; display:block }
+    input[type=radio]{ margin-right:6px }
+    .feedback { font-weight:600; margin-top:4px }
+    .correct { color:green }
+    .wrong { color:#d64545 }
+    .controls { display:flex; gap:8px; margin-top:12px }
+    button { background:#0b69ff; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer }
+    button.secondary { background:#e6f0ff; color:#0b69ff }
+    footer { margin-top:14px; font-size:0.9rem; color:#556b7a }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>50 ejercicios — Identificación de monomios</h1>
+    <p class="lead">Selecciona la opción correcta según se indique: <strong>coeficiente</strong>, <strong>variable</strong>, <strong>exponente</strong> o <strong>grado</strong> del monomio.</p>
+
+    <div id="exercises"></div>
+
+    <div class="controls">
+      <button onclick="checkAll()">Verificar todo</button>
+      <button class="secondary" onclick="showAllAnswers()">Mostrar soluciones</button>
+    </div>
+
+    <footer>Archivo listo para publicar: guarda este documento como <code>index.html</code> y súbelo a tu repositorio en GitHub para publicarlo con GitHub Pages.</footer>
+  </div>
+
+<script>
+// Lista con 50 monomios de una o varias variables intercalados
+const items = [
+  {tex: '-3x^4', question:'Coeficiente', answer:'-3', options:['-3','4','x','7']},
+  {tex: '2x^2y^2', question:'Grado', answer:'4', options:['2','4','x','y']},
+  {tex: '5y', question:'Variable', answer:'y', options:['5','y','1','grado 1']},
+  {tex: '3a^2b^3', question:'Exponente de b', answer:'3', options:['2','3','5','a']},
+  {tex: '7t^2', question:'Exponente', answer:'2', options:['2','7','t','9']},
+  {tex: '-7m^2n', question:'Coeficiente', answer:'-7', options:['-7','2','m','n']},
+  {tex: '-1/2xy^3', question:'Grado', answer:'4', options:['2','3','4','1']},
+  {tex: '4uv^2', question:'Variable', answer:'v', options:['u','v','4','2']},
+  {tex: '12a^5b', question:'Grado', answer:'6', options:['5','6','12','a']},
+  {tex: '9w', question:'Grado', answer:'1', options:['0','1','9','w']},
+  {tex: '-9z', question:'Coeficiente', answer:'-9', options:['z','-9','1','0']},
+  {tex: '2/3x^2y', question:'Grado', answer:'3', options:['2','3','5','y']},
+  {tex: 'x^6y^2', question:'Variable', answer:'x', options:['y','x','8','6']},
+  {tex: '7y^8', question:'Exponente', answer:'8', options:['7','y','8','15']},
+  {tex: '4mn^3', question:'Exponente de n', answer:'3', options:['3','4','1','7']},
+  {tex: '5m^2n^2', question:'Grado', answer:'4', options:['2','4','5','m']},
+  {tex: '6b^3', question:'Grado', answer:'3', options:['6','3','b','9']},
+  {tex: '-6z', question:'Coeficiente', answer:'-6', options:['-6','z','1','0']},
+  {tex: '15pq', question:'Grado', answer:'2', options:['1','15','p','2']},
+  {tex: '11m^2p', question:'Grado', answer:'3', options:['2','3','11','m']},
+  {tex: '2x^0', question:'Coeficiente', answer:'2', options:['2','0','x','grado 0']},
+  {tex: '-5y^5z^2', question:'Grado', answer:'7', options:['5','2','7','-5']},
+  {tex: '10t^4', question:'Exponente', answer:'4', options:['10','t','4','14']},
+  {tex: '3abc', question:'Grado', answer:'3', options:['3','2','abc','1']},
+  {tex: '-1b', question:'Variable', answer:'b', options:['-1','b','1','grado 1']},
+  {tex: '16c^3', question:'Coeficiente', answer:'16', options:['16','c','3','19']},
+  {tex: '-13d^6', question:'Grado', answer:'6', options:['-13','d','6','7']},
+  {tex: '2xyz^2', question:'Grado', answer:'4', options:['2','3','4','5']},
+  {tex: '-5/4n^3q', question:'Grado', answer:'4', options:['3','4','5/4','n']},
+  {tex: '8s^7', question:'Exponente', answer:'7', options:['8','s','7','15']},
+  // 20 nuevos reactivos intercalados
+  {tex: '2ab^2', question:'Grado', answer:'3', options:['2','3','4','5']},
+  {tex: '-3x^2y^3', question:'Coeficiente', answer:'-3', options:['-3','2','3','x']},
+  {tex: '4p^2q^2', question:'Grado', answer:'4', options:['2','4','3','6']},
+  {tex: '5m^3n', question:'Exponente de m', answer:'3', options:['1','2','3','5']},
+  {tex: '-7uv^2', question:'Variable', answer:'v', options:['u','v','-7','2']},
+  {tex: '6xy', question:'Grado', answer:'2', options:['1','2','3','6']},
+  {tex: '3a^2b', question:'Grado', answer:'3', options:['2','3','5','a']},
+  {tex: '-8mn^3', question:'Coeficiente', answer:'-8', options:['-8','3','mn','n']},
+  {tex: '10pq^2', question:'Exponente de q', answer:'2', options:['1','2','10','pq']},
+  {tex: '12x^4y^2', question:'Grado', answer:'6', options:['4','6','5','12']},
+  {tex: '-2r^3s^2', question:'Grado', answer:'5', options:['3','2','5','-2']},
+  {tex: '7ab^3c', question:'Grado', answer:'5', options:['5','4','3','7']},
+  {tex: '-9x^2y^2', question:'Coeficiente', answer:'-9', options:['-9','2','4','x']},
+  {tex: '5m^2n^3', question:'Grado', answer:'5', options:['5','2','3','m']},
+  {tex: '6p^3q', question:'Exponente de p', answer:'3', options:['3','6','1','p']},
+  {tex: '-4xy^4', question:'Grado', answer:'5', options:['4','5','1','-4']},
+  {tex: '8a^2b^2', question:'Grado', answer:'4', options:['2','4','3','8']},
+  {tex: '-11mn', question:'Coeficiente', answer:'-11', options:['-11','1','mn','11']},
+  {tex: '9x^2y^3z', question:'Grado', answer:'6', options:['6','5','7','9']},
+  {tex: '3ab^2', question:'Grado', answer:'3', options:['2','3','4','5']},
+  {tex: '-5p^3q^2', question:'Grado', answer:'5', options:['5','3','2','-5']},
+  {tex: '7x^4y', question:'Exponente de x', answer:'4', options:['4','7','1','y']}
+];
+
+function createExercises(){
+  const container = document.getElementById('exercises');
+  items.forEach((it, i) =>{
+    const div = document.createElement('div');
+    div.className = 'exercise';
+    div.id = 'ex'+i;
+    div.innerHTML = `
+      <div class="expr">\\( ${it.tex} \\)</div>
+      <p><strong>${it.question}</strong></p>
+      <div class="options">
+        ${it.options.map((opt,j)=>`<label><input type="radio" name="q${i}" value="${opt}">${opt}</label>`).join('')}
+      </div>
+      <div class="feedback" id="fb${i}"></div>
+    `;
+    container.appendChild(div);
+  });
+  if(window.MathJax) MathJax.typesetPromise();
+}
+
+function check(i){
+  const radios = document.getElementsByName('q'+i);
+  let val = null;
+  for(let r of radios){ if(r.checked) val=r.value; }
+  const fb = document.getElementById('fb'+i);
+  if(val===items[i].answer){ fb.innerHTML='<span class="correct">¡Correcto! ✅</span>'; }
+  else { fb.innerHTML='<span class="wrong">Incorrecto ❌</span>'; }
+}
+
+function checkAll(){ for(let i=0;i<items.length;i++) check(i); }
+
+function showAllAnswers(){
+  for(let i=0;i<items.length;i++){
+    const radios=document.getElementsByName('q'+i);
+    for(let r of radios){ if(r.value===items[i].answer){ r.checked=true; } }
+    document.getElementById('fb'+i).innerHTML='<span class="correct">Solución mostrada</span>';
+  }
+}
+
+createExercises();
+</script>
+</body>
+</html>
