@@ -18,9 +18,7 @@
     .feedback { font-weight:600; margin-top:4px }
     .correct { color:green }
     .wrong { color:#d64545 }
-    .controls { display:flex; gap:8px; margin-top:12px }
-    button { background:#0b69ff; color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer }
-    button.secondary { background:#e6f0ff; color:#0b69ff }
+    .controls { margin-top:12px; font-weight:bold; color:#0b69ff }
     footer { margin-top:14px; font-size:0.9rem; color:#556b7a }
   </style>
 </head>
@@ -32,17 +30,15 @@
     <div id="exercises"></div>
 
     <div class="controls">
-      <button onclick="checkAll()">Verificar todo</button>
-      <button class="secondary" onclick="showAllAnswers()">Mostrar soluciones</button>
+      Respuestas correctas: <span id="score">0</span> de <span id="total">0</span>
     </div>
 
     <footer>Archivo listo para publicar: guarda este documento como <code>index.html</code> y súbelo a tu repositorio en GitHub para publicarlo con GitHub Pages.</footer>
   </div>
 
 <script>
-// Lista con 50 monomios de una o varias variables intercalados
 const items = [
-  {tex: '-3x^4', question:'Coeficiente', answer:'-3', options:['-3','4','x','7']},
+    {tex: '-3x^4', question:'Coeficiente', answer:'-3', options:['-3','4','x','7']},
   {tex: '2x^2y^2', question:'Grado', answer:'4', options:['2','4','x','y']},
   {tex: '5y', question:'Variable', answer:'y', options:['5','y','1','grado 1']},
   {tex: '3a^2b^3', question:'Exponente de b', answer:'3', options:['2','3','5','a']},
@@ -97,6 +93,9 @@ const items = [
   {tex: '7x^4y', question:'Exponente de x', answer:'4', options:['4','7','1','y']}
 ];
 
+let score = 0;
+document.getElementById('total').textContent = items.length;
+
 function createExercises(){
   const container = document.getElementById('exercises');
   items.forEach((it, i) =>{
@@ -107,7 +106,7 @@ function createExercises(){
       <div class="expr">\\( ${it.tex} \\)</div>
       <p><strong>${it.question}</strong></p>
       <div class="options">
-        ${it.options.map((opt,j)=>`<label><input type="radio" name="q${i}" value="${opt}">${opt}</label>`).join('')}
+        ${it.options.map((opt,j)=>`<label><input type="radio" name="q${i}" value="${opt}" onchange="check(${i})">${opt}</label>`).join('')}
       </div>
       <div class="feedback" id="fb${i}"></div>
     `;
@@ -121,17 +120,16 @@ function check(i){
   let val = null;
   for(let r of radios){ if(r.checked) val=r.value; }
   const fb = document.getElementById('fb'+i);
-  if(val===items[i].answer){ fb.innerHTML='<span class="correct">¡Correcto! ✅</span>'; }
-  else { fb.innerHTML='<span class="wrong">Incorrecto ❌</span>'; }
-}
-
-function checkAll(){ for(let i=0;i<items.length;i++) check(i); }
-
-function showAllAnswers(){
-  for(let i=0;i<items.length;i++){
-    const radios=document.getElementsByName('q'+i);
-    for(let r of radios){ if(r.value===items[i].answer){ r.checked=true; } }
-    document.getElementById('fb'+i).innerHTML='<span class="correct">Solución mostrada</span>';
+  if(val === items[i].answer){
+    if (!fb.classList.contains('correct')) {
+      fb.innerHTML = '<span class="correct">¡Correcto! ✅</span>';
+      fb.classList.add('correct');
+      score++;
+      document.getElementById('score').textContent = score;
+    }
+  } else {
+    fb.innerHTML = '<span class="wrong">Incorrecto ❌</span>';
+    fb.classList.remove('correct');
   }
 }
 
